@@ -7,7 +7,7 @@ app.listen(4600,()=>console.log('Server is running on port 4600'));
 app.set('view engine', 'ejs');
 app.set('views', __dirname + '/views'); 
 app.use(express.json());
-app.use(express.static('public'))
+app.use(express.static(__dirname + '/public'));
 
 let employees=[
   {id:1, name:'John Doe', department:'Sales', salary:5000},
