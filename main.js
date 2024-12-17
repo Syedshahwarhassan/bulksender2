@@ -5,6 +5,7 @@ const app=express();
 
 app.listen(4600,()=>console.log('Server is running on port 4600'));
 app.set('view engine', 'ejs');
+app.set('views', __dirname + '/views'); 
 app.use(express.json());
 app.use(express.static('./public'))
 
