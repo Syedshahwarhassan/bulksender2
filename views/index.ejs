@@ -8,7 +8,7 @@
     style-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; 
     font-src 'self' https://fonts.gstatic.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Form with Quill Editor</title>
+    <title>Email Bulk Sender</title>
     
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
@@ -21,21 +21,40 @@
     <div>
         <h1>Email Bulk Sender</h1>
 
-        <form id="emailForm" method="post">
+        <div  id="emailForm" method="get">
             <label for="subject">Enter Subject:</label>
             <input type="text" id="subject" name="subject" required placeholder="Enter your subject">
 
             <label for="content">Email Content:</label>
             <div id="editor">
-              <h2>Demo Content</h2>
-              <p>Preset build with <code>snow</code> theme, and some common formats.</p>
+              
+              <p>Email bulk Sender developed by shahwar hassan</p>
             </div>
 
-            <button type="submit">Submit</button>
-        </form>
+            <button onclick="submithandle()" type="submit">Submit</button>
+          </div>
     </div>
 
     <script>
+       function submithandle() {
+            var subject = document.getElementById('subject').value;
+            var content = quill.root.innerHTML;
+           if(!subject){
+             alert('Please enter subject');
+             return;
+           }else{
+            fetch('/send',{
+              method: 'POST',
+              headers: {'Content-Type': 'application/json'},
+              body: JSON.stringify({subject, content})
+            }).then(async(res)=>{
+              if(res.ok) {
+                alert('Email sent successfully');
+              }
+              throw new Error('Network response was not ok');
+            })
+           }
+          }
         const quill = new Quill('#editor', {
             theme: 'snow'
         });
