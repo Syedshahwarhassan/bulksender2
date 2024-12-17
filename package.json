@@ -2,12 +2,12 @@
   "dependencies": {
     "ejs": "^3.1.10",
     "express": "^4.21.2",
-    "nodemailer": "^6.9.16"
+    "nodemailer": "^6.9.16",
+    "serverless-http": "^3.2.0"
   },
   "name": "bulksender",
   "version": "1.0.0",
   "main": "main.js",
-  "devDependencies": {},
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

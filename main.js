@@ -1,5 +1,5 @@
 const express=require('express')
-
+const serverless = require('serverless-http');
 const app=express();
 
 
@@ -19,3 +19,12 @@ let employees=[
   app.get('/add',(req,res)=>{
     res.send(employees)
   })
+
+
+
+
+
+
+
+
+  module.exports.handler = serverless(app);
