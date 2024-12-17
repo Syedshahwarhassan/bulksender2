@@ -2,14 +2,43 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://vercel.live; font-src 'self' https://fonts.googleapis.com https://fonts.gstatic.com;">
-
+    <meta http-equiv="Content-Security-Policy" content="
+    default-src 'self'; 
+    script-src 'self' https://vercel.live https://cdn.jsdelivr.net https://unpkg.com 'unsafe-inline'; 
+    style-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; 
+    font-src 'self' https://fonts.gstatic.com;">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Form with Quill Editor</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    
     <link rel="stylesheet" href="/style/index.css">
 
 </head>
 <body>
-  <h1>Syed shahwar Hassan </h1>
+
+    <div>
+        <h1>Email Bulk Sender</h1>
+
+        <form id="emailForm" method="post">
+            <label for="subject">Enter Subject:</label>
+            <input type="text" id="subject" name="subject" required placeholder="Enter your subject">
+
+            <label for="content">Email Content:</label>
+            <div id="editor">
+              <h2>Demo Content</h2>
+              <p>Preset build with <code>snow</code> theme, and some common formats.</p>
+            </div>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+
+    <script>
+        const quill = new Quill('#editor', {
+            theme: 'snow'
+        });
+    </script>
 </body>
 </html>
