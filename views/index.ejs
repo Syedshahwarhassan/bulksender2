@@ -1,63 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="Content-Security-Policy" content="
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="
     default-src 'self'; 
     script-src 'self' https://vercel.live https://cdn.jsdelivr.net https://unpkg.com 'unsafe-inline'; 
     style-src 'self' https://unpkg.com https://cdn.jsdelivr.net https://fonts.googleapis.com; 
-    font-src 'self' https://fonts.gstatic.com;">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    font-src 'self' https://fonts.gstatic.com;"
+    />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Email Bulk Sender</title>
-    
+
     <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
-    
-    <link rel="stylesheet" href="/style/index.css">
+    <link
+      href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/style/index.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Email Bulk Sender</h1>
 
-</head>
-<body>
+      <div id="emailForm">
+        <div class="input-group">
+          <label for="subject">Enter Subject:</label>
+          <input
+            type="text"
+            id="subject"
+            name="subject"
+            required
+            placeholder="Enter your subject"
+          />
+        </div>
 
-    <div>
-        <h1>Email Bulk Sender</h1>
-
-        <div  id="emailForm" method="get">
-            <label for="subject">Enter Subject:</label>
-            <input type="text" id="subject" name="subject" required placeholder="Enter your subject">
-
-            <label for="content">Email Content:</label>
-            <div id="editor">
-              
-              <p>Email bulk Sender developed by shahwar hassan</p>
-            </div>
-
-            <button onclick="submithandle()" type="submit">Submit</button>
+        <div class="input-group">
+          <label for="content">Email Content:</label>
+          <div id="editor">
+            <p>Email bulk sender developed by Shahwar Hassan</p>
           </div>
+        </div>
+
+        <button onclick="submithandle(event)" type="button">Submit</button>
+      </div>
+
+      <div class="emailbox">
+        <div id="emailpreview" class="emailpreview"></div>
+        <input
+          type="email"
+          id="mailbox"
+          onkeydown="handlekey(event)"
+          class="mailbox"
+          placeholder="Enter email"
+        />
+      </div>
     </div>
 
     <script>
-       function submithandle() {
-            var subject = document.getElementById('subject').value;
-            var content = quill.root.innerHTML;
-           if(!subject){
-             alert('Please enter subject');
-             return;
-           }else{
-            fetch('/send',{
-              method: 'POST',
-              headers: {'Content-Type': 'application/json'},
-              body: JSON.stringify({subject, content})
-            }).then(async(res)=>{
-              if(res.ok) {
-                alert('Email sent successfully');
-              }
-              throw new Error('Network response was not ok');
-            })
-           }
+      var emaillist = [];
+      const emailpreview = document.getElementById("emailpreview");
+
+      function handlekey(e) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const emailbox = document.getElementById("mailbox");
+          const email = emailbox.value.trim();
+
+          if (!validateEmail(email)) {
+            alert("Invalid email address");
+            return;
           }
-        const quill = new Quill('#editor', {
-            theme: 'snow'
+
+          emaillist.push(email);
+          renderEmails();
+          emailbox.value = "";
+        }
+      }
+
+      function validateEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+      }
+
+      function renderEmails() {
+        emailpreview.innerHTML = "";
+        emaillist.forEach((email, index) => {
+          const emailDiv = document.createElement("div");
+          emailDiv.className = "email";
+
+          const emailText = document.createElement("span");
+          emailText.textContent = email;
+
+          const deleteButton = document.createElement("button");
+          deleteButton.textContent = "Delete";
+          deleteButton.onclick = () => {
+            emaillist.splice(index, 1);
+            renderEmails();
+          };
+
+          emailDiv.appendChild(emailText);
+          emailDiv.appendChild(deleteButton);
+          emailpreview.appendChild(emailDiv);
         });
+      }
+
+      function submithandle(e) {
+        e.preventDefault();
+
+        const subject = document.getElementById("subject").value.trim();
+        const content = quill.root.innerHTML;
+
+        if (!subject) {
+          alert("Please enter a subject");
+          return;
+        }
+
+        if (emaillist.length === 0) {
+          alert("Please add at least one email");
+          return;
+        }
+
+        fetch("/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ subject, content, emaillist: emaillist }),
+        })
+          .then(async (res) => {
+            if (res.ok) {
+              alert("Emails sent successfully");
+              emaillist = [];
+              renderEmails();
+            } else {
+              const error = await res.json();
+              alert("Error sending emails: " + error.message);
+            }
+          })
+          .catch((error) => {
+            console.error(error);
+            alert("An error occurred while sending emails.");
+          });
+      }
+
+      const quill = new Quill("#editor", {
+        theme: "snow",
+      });
     </script>
-</body>
+  </body>
 </html>
